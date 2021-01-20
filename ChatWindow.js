@@ -40,12 +40,15 @@ function ChatWindow({ navigation, route }) {
         return(
             <View style={item.data.type === "sent" 
                             ? styles.sentMessage : styles.receivedMessage}>
-                <View style={{flexDirection: "row"}}>
-                    <Text style={{fontSize: 15}}>{item.data.content}</Text>
+                <View>
                     <Text style={{
-                                marginTop: 5, 
-                                marginLeft: 5, 
-                                color: "gray"
+                                fontSize: 15,
+                                marginRight: 70
+                            }}>{item.data.content}</Text>
+                    <Text style={{
+                                color: "gray",
+                                alignSelf: "flex-end",
+                                marginTop: -15
                             }}>{getTime(item.data.timestamp)}</Text>
                 </View>
             </View>
