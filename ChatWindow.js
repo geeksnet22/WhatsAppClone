@@ -24,10 +24,30 @@ function ChatWindow({ navigation, route }) {
     }, [])
 
     const renderItem = ({ item }) => {
+        const getTime = (timestamp) => {
+            if(!timestamp) {
+                return
+            }
+            const date = timestamp.toDate();
+            var hour = date.getHours();
+            var minute = date.getMinutes();
+            const ampm = hour >= 12 ? 'pm' : 'am';
+            hour = hour % 12;
+            minute = minute < 10 ? '0'+minute : minute;
+            return `${hour}:${minute} ${ampm}`
+        }
+
         return(
             <View style={item.data.type === "sent" 
                             ? styles.sentMessage : styles.receivedMessage}>
-                <Text>{item.data.content}</Text>
+                <View style={{flexDirection: "row"}}>
+                    <Text style={{fontSize: 15}}>{item.data.content}</Text>
+                    <Text style={{
+                                marginTop: 5, 
+                                marginLeft: 5, 
+                                color: "gray"
+                            }}>{getTime(item.data.timestamp)}</Text>
+                </View>
             </View>
         )
     }
@@ -121,7 +141,7 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     sentMessage: {
-        padding: 8,
+        padding: 5,
         backgroundColor: "#DCF8C6",
         borderRadius: 10,
         alignSelf: "flex-end",
@@ -130,7 +150,7 @@ const styles = StyleSheet.create({
         maxWidth: "80%"
     },
     receivedMessage: {
-        padding: 8,
+        padding: 5,
         backgroundColor: "#FFFFFF",
         borderRadius: 10,
         alignSelf: "flex-start",
