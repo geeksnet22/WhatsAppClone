@@ -8,9 +8,11 @@ function Chat({ displayName, photoURL, lastMessage, timestamp, uid }) {
     const navigation = useNavigation()
 
     const getTimeAgo = () => {
+        if(!timestamp) {
+            return;
+        }
         const millisSince = Date.now() - timestamp.toMillis();
         const date = timestamp.toDate();
-        console.log(`${date.getFullYear()}-${parseInt(date.getMonth())+1}-${date.getDate()}`)
         if (millisSince < 8.64e+7) {
             var hour = date.getHours();
             var minute = date.getMinutes();
