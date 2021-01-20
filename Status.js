@@ -3,8 +3,13 @@ import { View, Text } from 'react-native';
 
 function Status() {
     return (
-        <View>
-            <Text>Status</Text>
+        <View style={{
+                flex: 1, 
+                justifyContent: "center", 
+                alignItems: "center"
+            }}
+        >
+            <Text>Yet to be implemented</Text>
         </View>
     )
 }

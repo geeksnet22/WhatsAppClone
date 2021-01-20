@@ -3,8 +3,12 @@ import { View, Text } from 'react-native';
 
 function Calls() {
     return (
-        <View>
-            <Text>Calls</Text>
+        <View style={{
+            flex: 1, 
+            justifyContent: "center", 
+            alignItems: "center"
+        }}>
+            <Text>Yet to be implemented</Text>
         </View>
     )
 }

@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Image, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Chats from './Chats';
 import Status from './Status';
@@ -11,6 +11,8 @@ import { Provider, useSelector } from 'react-redux';
 import configureStore from './redux/configureStore';
 import { LogBox } from 'react-native';
 import Contacts from './Contacts';
+import ChatWindow from './ChatWindow';
+import { color } from 'react-native-reanimated';
 
 LogBox.ignoreAllLogs();
 
@@ -23,13 +25,44 @@ function Home() {
     return <Login />
   }
   return (
-      <Tab.Navigator>
-        <Tab.Screen name="CHATS" component={Chats} />
-        <Tab.Screen name="STATUS" component={Status} />
-        <Tab.Screen name="CALLS" component={Calls} />
+      <Tab.Navigator
+        tabBarOptions={{
+          style: {
+            backgroundColor: "#075E54"
+          },
+          indicatorStyle: {
+            backgroundColor: "#FFFFFF"
+          },
+          activeTintColor: "#FFFFFF"
+        }}
+      >
+        <Tab.Screen 
+          name="CHATS" 
+          component={Chats}
+        />
+        <Tab.Screen 
+          name="STATUS" 
+          component={Status} 
+        />
+        <Tab.Screen 
+          name="CALLS" 
+          component={Calls} 
+        />
       </Tab.Navigator>
   )
 }
+
+const ChatWindowTitle = ({ displayName, photoURL }) => (
+  <View style={styles.chatWindowTitle}>
+    <Image 
+      style={styles.userAvatar}
+      source={{
+        uri: photoURL
+      }}
+    />
+    <Text style={{color: "#FFFFFF", fontSize: 20}}>{displayName}</Text>
+  </View>
+)
 
 function App() {
   return (
@@ -39,15 +72,38 @@ function App() {
           screenOptions={{
             headerStyle: {
               backgroundColor: "#075E54",
-            }
-          }}>
+              elevation: 0,
+              borderBottomWidth: 0
+            },
+            headerTintColor: "#FFFFFF"
+          }}
+        >
           <Stack.Screen 
             name="Home"
-            component={Home}>
+            component={Home}
+            options={{
+              headerTitle: "WhatsApp"
+            }}
+          >
           </Stack.Screen>
           <Stack.Screen 
             name="Contacts"
-            component={Contacts}>
+            component={Contacts}
+            options={({
+              headerTitle: "Select contact"
+            })}
+          >
+          </Stack.Screen>
+          <Stack.Screen 
+            name="ChatWindow"
+            component={ChatWindow}
+            options={({ route }) => ({
+              headerTitle: <ChatWindowTitle 
+                              displayName={route.params.displayName} 
+                              photoURL={route.params.photoURL}
+                            />
+            })}
+          >
           </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
@@ -56,12 +112,16 @@ function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  chatWindowTitle: {
+    flexDirection: "row"
   },
+  userAvatar: {
+    height: 35,
+    width: 35,
+    borderRadius: 17.5,
+    marginRight: 10,
+    backgroundColor: "gray"
+  }
 });
 
 export default App;

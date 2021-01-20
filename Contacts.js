@@ -18,8 +18,14 @@ function Contacts({ navigation }) {
         ));
     }, [])
 
-    const Item = ({ displayName, photoURL }) => (
-        <TouchableOpacity onPress={() => console.log("GSB")}>
+    const Item = ({ displayName, photoURL, uid }) => (
+        <TouchableOpacity 
+            onPress={() => navigation.navigate("ChatWindow", {
+                displayName: displayName,
+                photoURL: photoURL,
+                uid: uid
+            })}
+        >
             <View style={styles.item}>
                 <Image 
                     style={styles.avatar}
@@ -38,7 +44,9 @@ function Contacts({ navigation }) {
     const renderContact = ({ item }) => {
         return <Item 
                     displayName={item.data.name} 
-                    photoURL={item.data.photoURL} />
+                    photoURL={item.data.photoURL} 
+                    uid={item.id}
+                />
     }
 
     return (
