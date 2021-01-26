@@ -35,8 +35,8 @@ function Chats({ navigation }) {
     )
 
     return (
-        <View style={{flex: 1}}>
-            <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1 }}>
                 <FlatList 
                     data={chats}
                     renderItem={renderItem}
@@ -65,9 +65,6 @@ function Chats({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
     iconContainer: {
         backgroundColor: "#25D366", 
         height: 60, 
