@@ -15,6 +15,7 @@ import Settings from './components/Settings';
 import { vw, vh } from 'react-native-expo-viewport-units';
 import { navigationRef, navigate } from './RootNavigation';
 import Profile from './components/Profile';
+import NewGroup from './components/NewGroup';
 
 LogBox.ignoreAllLogs();
 
@@ -26,7 +27,13 @@ function App() {
 
   const HomeMenu = () => (
     <View style={styles.menuContainer} >
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity 
+        style={styles.menuItem}
+        onPress={() => {
+          setIsMenuVisible(false)
+          navigate("NewGroup")
+        }}
+      >
         <Text style={styles.menuItemText}>New Group</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.menuItem}>
@@ -129,6 +136,10 @@ function App() {
           <Stack.Screen
             name="Profile"
             component={Profile}
+          />
+          <Stack.Screen 
+            name="NewGroup"
+            component={NewGroup}
           />
         </Stack.Navigator>
       </NavigationContainer>
