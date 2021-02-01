@@ -3,6 +3,10 @@ import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 function Settings() {
 
@@ -24,18 +28,80 @@ function Settings() {
             </TouchableOpacity>
             <View style={styles.menuContainer}>
                 <TouchableOpacity style={styles.menuItemContainer}>
-                    <View style={styles.menuItemContainer}>
+                    <View style={styles.menuIconContainer}>
                         <MaterialCommunityIcons 
                             name="key-variant" 
-                            size={24} 
-                            color="black" />
+                            size={20} 
+                            color="#128C7E" />
                     </View>
-                    
                     <View style={styles.menuTextContainer}>
                         <Text style={styles.primaryText}>Account</Text>
                         <Text style={styles.secondaryText}>Privacy, security, changeNumber</Text>
                     </View>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.menuItemContainer}>
+                    <View style={styles.menuIconContainer}>
+                        <MaterialCommunityIcons 
+                            name="message-text"
+                            size={20}
+                            color="#128C7E" />
+                    </View>
+                    <View style={styles.menuTextContainer}>
+                        <Text style={styles.primaryText}>Chats</Text>
+                        <Text style={styles.secondaryText}>Theme, wallpapers, chat history</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.menuItemContainer}>
+                    <View style={styles.menuIconContainer}>
+                        <Ionicons 
+                            name="notifications" 
+                            size={20} 
+                            color="#128C7E" />
+                    </View>
+                    <View style={styles.menuTextContainer}>
+                        <Text style={styles.primaryText}>Notifications</Text>
+                        <Text style={styles.secondaryText}>Message, group and call tones</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.menuItemContainer}>
+                    <View style={styles.menuIconContainer}>
+                        <MaterialIcons 
+                            name="data-usage" 
+                            size={20} 
+                            color="#128C7E" />
+                    </View>
+                    <View style={styles.menuTextContainer}>
+                        <Text style={styles.primaryText}>Storage and Data</Text>
+                        <Text style={styles.secondaryText}>Network usage, auto-download</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.lastItemContainer}>
+                    <View style={styles.lastMenuIconContainer}>
+                        <Feather 
+                            name="help-circle" 
+                            size={20} 
+                            color="#128C7E" />
+                    </View>
+                    <View style={styles.lastMenuTextContainer}>
+                        <Text style={styles.primaryText}>Help</Text>
+                        <Text style={styles.secondaryText}>Help centre, contact us, privacy policy</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.menuItemContainer}>
+                    <View style={styles.menuIconContainer}>
+                        <FontAwesome5 
+                            name="user-friends" 
+                            size={20} 
+                            color="#128C7E" />
+                    </View>
+                    <View style={styles.menuTextContainer}>
+                        <Text style={styles.primaryText}>Invite a friend</Text>
+                    </View>
+                </TouchableOpacity>
+                <View style={styles.logo}>
+                    <Text style={styles.logoTextSecondary}>from</Text>
+                    <Text style={styles.logoTextPrimary}>FACEBOOK</Text>
+                </View>
             </View>
         </ScrollView>
     )
@@ -60,28 +126,58 @@ const styles = StyleSheet.create({
     },
     userName: {
         fontSize: 25,
-        marginLeft: 15
+        marginLeft: 15,
     },
     menuContainer: {
-        padding: 15
+        paddingVertical: 15,
     },
     menuItemContainer: {
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
+        paddingVertical: 15,
+        paddingLeft: 20
+    },
+    lastItemContainer: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        paddingVertical: 15,
+        paddingLeft: 20
     },
     menuIconContainer: {
-        height: 40,
-        width: 40,
-        borderRadius: 20
+
+    },
+    lastMenuIconContainer: {
+        marginTop: 12
     },
     menuTextContainer: {
-        marginLeft: 15
+        marginLeft: 25,
+        flex: 1
+    },
+    lastMenuTextContainer: {
+        marginLeft: 25,
+        flex: 1,
+        borderBottomColor: "gray",
+        borderBottomWidth: 0.2,
+        paddingBottom: 30
     },
     primaryText: {
-        fontSize: 18
+        fontSize: 17
     },
     secondaryText: {
-        fontSize: 15,
+        fontSize: 14,
+        color: "gray"
+    },
+    logo: {
+        alignSelf: "center",
+        marginTop: 20,
+        marginBottom: 20
+    },
+    logoTextPrimary: {
+        textAlign: "center",
+        letterSpacing: 3
+    },
+    logoTextSecondary: {
+        textAlign: "center",
         color: "gray"
     }
 })

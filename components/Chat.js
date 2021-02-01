@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         backgroundColor: "gray"
     },
     textContainer: {
-        height: 60,
+        height: 80,
         flex: 1,
         flexDirection: "row",
         justifyContent: "space-between",
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
         marginLeft: 15,
         marginRight: 5,
         borderBottomColor: "gray",
-        borderBottomWidth: 1
+        borderBottomWidth: 0.2
     },
     leftPortion: {
         flexDirection: "column",
@@ -92,10 +92,10 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     timeAgo: {
-        fontSize: 15,
+        fontSize: 14,
         color: "gray",
         alignSelf: "flex-start",
-        marginTop: 10
+        marginTop: 20
     }
 })
 
