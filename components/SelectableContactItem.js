@@ -3,18 +3,12 @@ import { View, Image, Text, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-function SelectableContactItem({ onSelectionChange, displayName, photoURL, uid }) {
-
-    const [isSelected, setIsSelected] = useState(false);
-
-    useEffect(() => {
-        onSelectionChange(uid, isSelected)
-    }, [isSelected])
+function SelectableContactItem({ onSelectionChange, displayName, photoURL, uid, isSelected }) {
 
     return (
         <TouchableOpacity
             onPress={() => {
-                setIsSelected(!isSelected)
+                onSelectionChange(uid, !isSelected)
             }}
         >
             <View style={styles.item}>

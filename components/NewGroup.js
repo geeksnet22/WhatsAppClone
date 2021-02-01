@@ -12,6 +12,7 @@ function NewGroup() {
     const [contacts, setContacts] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
 
+
     const HeaderTitle = () => (
         <View>
             <Text style={styles.headerTitlePrimary}>New Group</Text>
@@ -66,13 +67,26 @@ function NewGroup() {
             displayName={item.data.name} 
             photoURL={item.data.photoURL} 
             uid={item.id}
+            isSelected={selectedUsers.filter(
+                (contact) => (contact.id === item.id)).length > 0}
         />
     )
 
     const SelectedContactItem = ({ displayName, photoURL, uid }) => (
         <TouchableOpacity 
             style={styles.selectedItemContainer}
-            onPress={() => {console.log(uid)}}>
+            onPress={() => {
+                let index;
+                for (index = 0; index < selectedUsers.length; index++) {
+                    if ( selectedUsers[index].id === uid ) {
+                        break;
+                    }
+                }
+                if (index > -1) {
+                    selectedUsers.splice(index, 1);
+                }
+                setSelectedUsers(selectedUsers.concat([]))
+            }}>
             <View style={styles.selectedUserImageContainer}>
                 <Image 
                     style={styles.selectedUserAvatar}
