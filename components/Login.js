@@ -3,7 +3,7 @@ import { View, TextInput, Text, StyleSheet, Image, Alert, ScrollView } from 'rea
 import { useDispatch } from 'react-redux';
 import { auth, db } from '../firebaseConfig';
 import whatsappLogo from '../images/WhatsApp-Logo.png';
-import { login } from '../redux/UserActions';
+import { login } from '../redux/user/UserActions';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
@@ -47,7 +47,7 @@ function Login() {
                         style={styles.textInput}
                         autoCapitalize="none"
                         autoCompleteType="email"
-                        placeholder="Email (Not Authenticated)"
+                        placeholder="Email"
                         placeholderTextColor="#FFFFFF"
                         selectionColor="#FFFFFF"
                         onChangeText={email => setEmail(email)}
@@ -67,7 +67,7 @@ function Login() {
                 </View>
                 <View style={ styles.buttonsContainer }>
                     <TouchableOpacity onPress={processLogin}>
-                        <Text style={styles.button}>Login</Text>
+                        <Text style={styles.button}>Log in</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
                         <Text style={styles.button}>Sign up</Text>

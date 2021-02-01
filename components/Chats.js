@@ -1,15 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
 import Chat from './Chat';
 import { db } from '../firebaseConfig';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
+import { setCurrentTab } from '../redux/currentTab/CurrentTabActions';
 
 function Chats({ navigation }) {
 
+    const dispatch = useDispatch();
     const user = useSelector(state => state.user.user)
     const [chats, setChats] = useState([])
+
+    useFocusEffect(
+        useCallback(
+            () => {
+                dispatch(setCurrentTab("CHATS"))
+            },[],
+        )
+    )
 
     useEffect(() => {
         db.collection(`/users/${user.uid}/chats`)

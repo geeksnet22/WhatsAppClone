@@ -1,10 +1,12 @@
 import { createStore, combineReducers } from 'redux';
-import userReducer from './UserReducer';
+import userReducer from './user/UserReducer';
+import currentTabReducer from './currentTab/CurrentTabReducer';
 
 
 const rootReducer = combineReducers(
     {
-        user: userReducer
+        user: userReducer,
+        currentTabName: currentTabReducer
     }
 );
 

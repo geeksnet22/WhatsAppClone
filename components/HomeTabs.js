@@ -1,18 +1,21 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useLayoutEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Calls from './Calls';
 import Chats from './Chats';
 import Status from './Status';
 import { Ionicons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
 
 function HomeTabs() {
 
-    const navigation = useNavigation();
     const Tab = createMaterialTopTabNavigator();
+    const navigation = useNavigation();
+    const currentTabName = useSelector(state => state.currentTabName.currentTabName);
+    const route = useRoute();
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -24,14 +27,19 @@ function HomeTabs() {
                     fontSize: 20,
                     padding: 10 }}>WhatsApp</Text>,
             headerRight: () => 
-                <View style={{ flexDirection: "row" }}>
-                    <TouchableOpacity style={{ padding: 12 }}>
+                <View style={styles.headerRight}>
+                    <TouchableOpacity style={styles.headerRightIcon}>
                     <Ionicons
                         name="search" 
                         size={20} 
                         color="#FFFFFF" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ padding: 12 }}>
+                    <TouchableOpacity 
+                        style={styles.headerRightIcon}
+                        onPress={
+                            () => route.params?.setIsMenuVisible(!route.params?.isMenuVisible)
+                        }
+                    >
                         <Entypo
                             name="dots-three-vertical" 
                             size={20} 
@@ -40,7 +48,7 @@ function HomeTabs() {
                     </TouchableOpacity>
                 </View>
         })
-    }, [navigation])
+    }, [navigation, currentTabName, route.params?.isMenuVisible])
 
     return (
         <Tab.Navigator
@@ -70,4 +78,13 @@ function HomeTabs() {
     )
 }
 
-export default HomeTabs
+const styles = StyleSheet.create({
+    headerRight: {
+        flexDirection: "row"
+    },
+    headerRightIcon: {
+        padding: 12
+    }
+})
+
+export default HomeTabs;

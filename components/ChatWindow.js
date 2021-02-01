@@ -32,13 +32,13 @@ function ChatWindow() {
             <Image 
               style={styles.userAvatar}
               source={{
-                uri: route.params.photoURL
+                uri: route.params?.photoURL
               }}
             />
           </TouchableOpacity>
           <Text style={{ 
                   color: "#FFFFFF", 
-                  fontSize: 20 }}>{route.params.displayName}</Text>
+                  fontSize: 20 }}>{route.params?.displayName}</Text>
         </View>
       )
       
@@ -73,7 +73,7 @@ function ChatWindow() {
     }, [])
 
     useEffect(() => {
-        db.collection(`users/${user.uid}/chats/${route.params.uid}/messages`)
+        db.collection(`users/${user.uid}/chats/${route.params?.uid}/messages`)
             .orderBy("timestamp", "desc").onSnapshot((snapshot) => (
                 setMessages(snapshot.docs.reverse().map((doc) => ({
                     id: doc.id,
@@ -119,16 +119,16 @@ function ChatWindow() {
             return;
         }
         // add message to current user's data
-        db.collection(`users/${user.uid}/chats`).doc(route.params.uid)
+        db.collection(`users/${user.uid}/chats`).doc(route.params?.uid)
             .set({
                 lastMessage: messageInput,
-                name: route.params.displayName,
-                photoURL: route.params.photoURL,
+                name: route.params?.displayName,
+                photoURL: route.params?.photoURL,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
         // add message to sent user's data
-        db.collection(`users/${route.params.uid}/chats`).doc(user.uid)
+        db.collection(`users/${route.params?.uid}/chats`).doc(user.uid)
             .set({
                 lastMessage: messageInput,
                 name: user.name,
@@ -136,14 +136,14 @@ function ChatWindow() {
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-        db.collection(`users/${user.uid}/chats/${route.params.uid}/messages`)
+        db.collection(`users/${user.uid}/chats/${route.params?.uid}/messages`)
             .add({
                 type: "sent",
                 content: messageInput,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             });
 
-        db.collection(`users/${route.params.uid}/chats/${user.uid}/messages`)
+        db.collection(`users/${route.params?.uid}/chats/${user.uid}/messages`)
             .add({
                 type: "received",
                 content: messageInput,

@@ -67,7 +67,7 @@ function Signup() {
                         style={styles.textInput}
                         autoCapitalize="none"
                         autoCompleteType="email"
-                        placeholder="Email (Not Authenticated)"
+                        placeholder="Email (Anything in email format)"
                         placeholderTextColor="#FFFFFF"
                         selectionColor="#FFFFFF"
                         onChangeText={email => setEmail(email)}

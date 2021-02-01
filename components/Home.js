@@ -1,14 +1,24 @@
-import { useNavigation } from '@react-navigation/native';
-import React from 'react'
+import { useRoute } from '@react-navigation/native';
+import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Login from './Login';
 import HomeTabs from './HomeTabs';
 
 function Home() {
 
+    const currentTabName = useSelector(state => state.currentTabName.currentTabName);
     const user = useSelector(state => state.user.user);
-    return (user ? <HomeTabs /> : <Login />);
+    const route = useRoute();
+
+    useEffect(() => {
+        route.params?.setCurrentTabName(currentTabName);
+    }, [currentTabName])
+
+    return (user 
+                ? <HomeTabs 
+                    isMenuVisible={route.params?.isMenuVisible}
+                    setIsMenuVisible={route.params?.setIsMenuVisible} /> 
+                : <Login />);
 }
 
 export default Home;
