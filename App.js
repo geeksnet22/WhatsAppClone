@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
 import configureStore from './redux/configureStore';
@@ -11,7 +11,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Home from './components/Home';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import { vw, vh, vmin, vmax } from 'react-native-expo-viewport-units';
+import Settings from './components/Settings';
+import { vw, vh } from 'react-native-expo-viewport-units';
+import { navigationRef, navigate } from './RootNavigation';
 
 LogBox.ignoreAllLogs();
 
@@ -35,7 +37,12 @@ function App() {
       <TouchableOpacity style={styles.menuItem}>
         <Text style={styles.menuItemText}>Starred Messages</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity 
+        style={styles.menuItem} 
+        onPress={() => {
+          setIsMenuVisible(false)
+          navigate("Settings")}}
+      >
         <Text style={styles.menuItemText}>Settings</Text>
       </TouchableOpacity>
     </View>
@@ -46,7 +53,12 @@ function App() {
       <TouchableOpacity style={styles.menuItem}>
         <Text style={styles.menuItemText}>Status privacy</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity 
+        style={styles.menuItem}
+        onPress={() => {
+          setIsMenuVisible(false)
+          navigate("Settings")}}
+      >
         <Text style={styles.menuItemText}>Settings</Text>
       </TouchableOpacity>
     </View>
@@ -57,7 +69,12 @@ function App() {
       <TouchableOpacity style={styles.menuItem}>
         <Text style={styles.menuItemText}>Clear call log</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity 
+        style={styles.menuItem}
+        onPress={() => {
+          setIsMenuVisible(false)
+          navigate("Settings")}}
+      >
         <Text style={styles.menuItemText}>Settings</Text>
       </TouchableOpacity>
     </View>
@@ -65,7 +82,7 @@ function App() {
 
   return (
     <Provider store={configureStore}>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
           screenOptions={{
             headerStyle: {
@@ -80,7 +97,7 @@ function App() {
             name="Home"
             component={Home}
             initialParams={{
-              setIsMenuVisible: (isMenuVisible) => setIsMenuVisible(isMenuVisible),
+              setIsMenuVisible: (menuVisibilty) => setIsMenuVisible(menuVisibilty),
               setCurrentTabName: (currentTabName) => setCurrentTabName(currentTabName)
             }}
           />
@@ -103,6 +120,10 @@ function App() {
           <Stack.Screen 
             name="ChatWindow"
             component={ChatWindow}
+          />
+          <Stack.Screen 
+            name="Settings"
+            component={Settings}  
           />
         </Stack.Navigator>
       </NavigationContainer>

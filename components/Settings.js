@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -18,16 +18,19 @@ function Settings() {
                         uri: user.photoURL
                     }}
                 />
-                <Text>
-                    {user.displayName}
+                <Text style={styles.userName}>
+                    {user.name?.split(" ")[0]}
                 </Text>
             </TouchableOpacity>
             <View style={styles.menuContainer}>
                 <TouchableOpacity style={styles.menuItemContainer}>
-                    <MaterialCommunityIcons 
-                        name="key-variant" 
-                        size={24} 
-                        color="black" />
+                    <View style={styles.menuItemContainer}>
+                        <MaterialCommunityIcons 
+                            name="key-variant" 
+                            size={24} 
+                            color="black" />
+                    </View>
+                    
                     <View style={styles.menuTextContainer}>
                         <Text style={styles.primaryText}>Account</Text>
                         <Text style={styles.secondaryText}>Privacy, security, changeNumber</Text>
@@ -43,34 +46,44 @@ const styles = StyleSheet.create({
         flex: 1
     },
     userInfoContainer: {
-        flexDirection: "row"
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 15,
+        borderBottomColor: "gray",
+        borderBottomWidth: 0.2
     },
     avatar: {
         height: 60,
         width: 60,
-        borderRadius: 30
+        borderRadius: 30,
+        backgroundColor: "gray"
     },
     userName: {
-
+        fontSize: 25,
+        marginLeft: 15
     },
     menuContainer: {
-
+        padding: 15
     },
     menuItemContainer: {
-
+        flexDirection: "row",
+        alignItems: "center"
     },
-    menuIcon: {
-
+    menuIconContainer: {
+        height: 40,
+        width: 40,
+        borderRadius: 20
     },
     menuTextContainer: {
-
+        marginLeft: 15
     },
     primaryText: {
-
+        fontSize: 18
     },
     secondaryText: {
-
+        fontSize: 15,
+        color: "gray"
     }
 })
 
-export default Settings
+export default Settings;
