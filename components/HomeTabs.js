@@ -37,7 +37,7 @@ function HomeTabs() {
                     <TouchableOpacity 
                         style={styles.headerRightIcon}
                         onPress={
-                            () => route.params?.setIsMenuVisible(!route.params?.isMenuVisible)
+                            () => route.params?.setIsMenuVisible(true)
                         }
                     >
                         <Entypo
@@ -48,7 +48,7 @@ function HomeTabs() {
                     </TouchableOpacity>
                 </View>
         })
-    }, [navigation, currentTabName, route.params?.isMenuVisible])
+    }, [navigation, currentTabName])
 
     return (
         <Tab.Navigator

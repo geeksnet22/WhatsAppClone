@@ -15,8 +15,7 @@ function Home() {
     }, [currentTabName])
 
     return (user 
-                ? <HomeTabs 
-                    isMenuVisible={route.params?.isMenuVisible}
+                ? <HomeTabs
                     setIsMenuVisible={route.params?.setIsMenuVisible} /> 
                 : <Login />);
 }
