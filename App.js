@@ -80,7 +80,6 @@ function App() {
             name="Home"
             component={Home}
             initialParams={{
-              isMenuVisible: isMenuVisible,
               setIsMenuVisible: (isMenuVisible) => setIsMenuVisible(isMenuVisible),
               setCurrentTabName: (currentTabName) => setCurrentTabName(currentTabName)
             }}
@@ -107,9 +106,6 @@ function App() {
           />
         </Stack.Navigator>
       </NavigationContainer>
-      {isMenuVisible && currentTabName === "CHATS" && <HomeMenu />}
-      {isMenuVisible && currentTabName === "STATUS" && <StatusMenu />}
-      {isMenuVisible && currentTabName === "CALLS" && <CallsMenu />}
       {isMenuVisible && 
         <View
           style={styles.invisibleViewContainer}>
@@ -118,6 +114,9 @@ function App() {
             onPress={() => setIsMenuVisible(false)} />
         </View>
       }
+      {isMenuVisible && currentTabName === "CHATS" && <HomeMenu />}
+      {isMenuVisible && currentTabName === "STATUS" && <StatusMenu />}
+      {isMenuVisible && currentTabName === "CALLS" && <CallsMenu />}
     </Provider>
   )
 }
