@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     },
     message: {
         fontSize: 15,
+        color: "gray"
     },
     timeAgo: {
         fontSize: 14,

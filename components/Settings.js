@@ -7,24 +7,32 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 function Settings() {
 
-    const user = useSelector(state => state.user.user)
+    const user = useSelector(state => state.user.user);
+    const navigation = useNavigation();
 
     return (
         <ScrollView style={styles.container}>
             <TouchableOpacity 
-                style={styles.userInfoContainer}>
+                style={styles.userInfoContainer}
+                onPress={() => navigation.navigate("Profile", {
+                    photoURL: user.photoURL,
+                    name: user.name
+                })}
+            >
                 <Image 
                     style={styles.avatar}
                     source={{
                         uri: user.photoURL
                     }}
                 />
-                <Text style={styles.userName}>
-                    {user.name?.split(" ")[0]}
-                </Text>
+                <View style={styles.userInfoTextContainer}>
+                    <Text style={styles.userName}>{user.name}</Text>
+                    <Text style={styles.userStatus}>Battery about to die</Text>
+                </View>
             </TouchableOpacity>
             <View style={styles.menuContainer}>
                 <TouchableOpacity style={styles.menuItemContainer}>
@@ -124,9 +132,14 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         backgroundColor: "gray"
     },
+    userInfoTextContainer: {
+        marginLeft: 15
+    },
     userName: {
-        fontSize: 25,
-        marginLeft: 15,
+        fontSize: 25
+    },
+    userStatus: {
+        color: "gray"
     },
     menuContainer: {
         paddingVertical: 15,

@@ -14,6 +14,7 @@ import Signup from './components/Signup';
 import Settings from './components/Settings';
 import { vw, vh } from 'react-native-expo-viewport-units';
 import { navigationRef, navigate } from './RootNavigation';
+import Profile from './components/Profile';
 
 LogBox.ignoreAllLogs();
 
@@ -124,6 +125,10 @@ function App() {
           <Stack.Screen 
             name="Settings"
             component={Settings}  
+          />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
           />
         </Stack.Navigator>
       </NavigationContainer>
