@@ -1,10 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, View, Text, Image } from 'react-native'
+import { SafeAreaView, StyleSheet, View, Text, Image, Platform, Alert, ToastAndroid } from 'react-native'
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler'
 import { db } from '../firebaseConfig';
 import SelectableContactItem from './SelectableContactItem';
 import { Entypo } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 
 function NewGroup() {
 
@@ -16,7 +17,12 @@ function NewGroup() {
     const HeaderTitle = () => (
         <View>
             <Text style={styles.headerTitlePrimary}>New Group</Text>
-            <Text style={styles.headerTitleSecondary}>Add participants</Text>
+            <Text 
+                style={styles.headerTitleSecondary}>
+                    {selectedUsers.length > 0 
+                        ? `${selectedUsers.length} of ${contacts.length} selected` 
+                            : `Add participants`}
+            </Text>
         </View>
     )
 
@@ -24,7 +30,7 @@ function NewGroup() {
         navigation.setOptions({
             title: <HeaderTitle />
         })
-    }, [navigation])
+    }, [navigation, selectedUsers])
 
     useEffect(() => {
         db.collection("users").onSnapshot((snapshot) => (
@@ -68,8 +74,7 @@ function NewGroup() {
             photoURL={item.data.photoURL} 
             uid={item.id}
             isSelected={selectedUsers.filter(
-                (contact) => (contact.id === item.id)).length > 0}
-        />
+                (contact) => (contact.id === item.id)).length > 0} />
     )
 
     const SelectedContactItem = ({ displayName, photoURL, uid }) => (
@@ -131,6 +136,27 @@ function NewGroup() {
                     keyExtractor={item => item.id}
                 />
             </SafeAreaView>
+            <View style={styles.floatingButtonContainer}>
+                <TouchableOpacity onPress={() => {
+                        if (selectedUsers.length === 0) {
+                            Platform.OS === 'ios' 
+                                ? Alert.alert("At least 1 contact must be selected") 
+                                    : ToastAndroid.show("At least 1 contact must be selected", ToastAndroid.SHORT);
+                        }
+                        else {
+                            navigation.navigate("NewGroupAddSubject", {
+                                selectedUsers: selectedUsers
+                            })
+                        }
+                    }}>
+                <View style={styles.floatingButton}>
+                    <Feather 
+                        name="arrow-right" 
+                        size={24} 
+                        color="#FFFFFF" />
+                </View>
+            </TouchableOpacity>
+            </View>
         </View>
     )
 }
@@ -173,6 +199,21 @@ const styles = StyleSheet.create({
     selectedUserName: {
         color: "gray",
         fontSize: 15
+    },
+    floatingButtonContainer: {
+        position: "absolute",
+        bottom: 20,
+        right: 20
+    },
+    floatingButton: {
+        backgroundColor: "#25D366", 
+        height: 60, 
+        width: 60,
+        borderRadius: 30,
+        justifyContent: "center",
+        alignItems: "center",
+        alignSelf: "flex-end",
+        flexDirection: "row"
     }
 })
 

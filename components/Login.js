@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Image, Alert, ScrollView } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { auth, db } from '../firebaseConfig';

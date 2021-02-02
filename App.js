@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { StyleSheet, View, Text, Platform } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
 import configureStore from './redux/configureStore';
@@ -16,6 +16,7 @@ import { vw, vh } from 'react-native-expo-viewport-units';
 import { navigationRef, navigate } from './RootNavigation';
 import Profile from './components/Profile';
 import NewGroup from './components/NewGroup';
+import NewGroupAddSubject from './components/NewGroupAddSubject';
 
 LogBox.ignoreAllLogs();
 
@@ -131,7 +132,7 @@ function App() {
           />
           <Stack.Screen 
             name="Settings"
-            component={Settings}  
+            component={Settings}
           />
           <Stack.Screen
             name="Profile"
@@ -140,6 +141,10 @@ function App() {
           <Stack.Screen 
             name="NewGroup"
             component={NewGroup}
+          />
+          <Stack.Screen
+            name="NewGroupAddSubject"
+            component={NewGroupAddSubject}
           />
         </Stack.Navigator>
       </NavigationContainer>
@@ -162,7 +167,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     position: "absolute",
     right: 0,
-    top: 30,
+    top: Platform.OS === 'ios' ? 40 : 30,
     color: "black",
     backgroundColor: "#FFFFFF",
     width: 200
@@ -175,7 +180,7 @@ const styles = StyleSheet.create({
   },
   invisibleViewContainer: {
     position: "absolute",
-    top: 30,
+    top: Platform.OS === 'ios' ? 40 : 30,
     right: 0
   },
   inivisibleView: {
