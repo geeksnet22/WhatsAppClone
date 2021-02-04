@@ -1,18 +1,18 @@
-import { LOGIN, LOGOUT } from './UserActionTypes';
+import { LOGIN, LOGOUT } from "./UserActionTypes";
 
 const INITIAL_STATE = {
-    user: null
-}
+  user: null,
+};
 
 const userReducer = (state = INITIAL_STATE, action) => {
-    switch(action.type) {
-        case LOGIN:
-            return { ...state, user: action.payload };
-        case LOGOUT:
-            return { ...state, user: null };
-        default:
-            return state;
-    }
-}
+  switch (action.type) {
+    case LOGIN:
+      return { ...state, user: action.payload };
+    case LOGOUT:
+      return { ...state, user: null };
+    default:
+      return state;
+  }
+};
 
 export default userReducer;

@@ -1,29 +1,29 @@
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback } from 'react'
-import { View, Text } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { setCurrentTab } from '../redux/currentTab/CurrentTabActions';
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback } from "react";
+import { View, Text } from "react-native";
+import { useDispatch } from "react-redux";
+import { setCurrentTab } from "../redux/currentTab/CurrentTabActions";
 
 function Status() {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch();
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(setCurrentTab("STATUS"));
+    }, [])
+  );
 
-    useFocusEffect(
-        useCallback(() => {
-            dispatch(setCurrentTab("STATUS"))
-        }, [])
-    );
-
-    return (
-        <View style={{
-                flex: 1, 
-                justifyContent: "center", 
-                alignItems: "center"
-            }}
-        >
-            <Text>Yet to be implemented</Text>
-        </View>
-    )
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text>Yet to be implemented</Text>
+    </View>
+  );
 }
 
-export default Status
+export default Status;

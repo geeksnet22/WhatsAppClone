@@ -1,14 +1,10 @@
-import { LOGIN, LOGOUT } from './UserActionTypes';
+import { LOGIN, LOGOUT } from "./UserActionTypes";
 
-export const login = ( user )=> (
-    {
-        type: LOGIN,
-        payload: user
-    }
-)
+export const login = (user) => ({
+  type: LOGIN,
+  payload: user,
+});
 
-export const logout = () => (
-    { 
-        type: LOGOUT
-    }
-)
+export const logout = () => ({
+  type: LOGOUT,
+});
