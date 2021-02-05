@@ -52,6 +52,7 @@ function Contacts() {
             .map((doc) => ({
               id: doc.id,
               data: doc.data(),
+              isGroup: false,
             }))
         )
       );
@@ -61,10 +62,10 @@ function Contacts() {
         snapshot.docs.map((doc) => ({
           id: doc.id,
           data: {
-            id: doc.id,
             name: doc.data().subject,
             photoURL: doc.data().icon,
           },
+          isGroup: true,
         }))
       )
     );
@@ -82,14 +83,25 @@ function Contacts() {
     </TouchableOpacity>
   );
 
-  const ContactItem = ({ displayName, photoURL, uid }) => (
+  const ContactItem = ({ displayName, photoURL, uid, isGroup }) => (
     <TouchableOpacity
       onPress={() =>
-        navigation.navigate("ChatWindow", {
-          displayName: displayName,
-          photoURL: photoURL,
-          uid: uid,
-        })
+        navigation.navigate(
+          "ChatWindow",
+          isGroup
+            ? {
+                groupSubject: displayName,
+                iconURL: photoURL,
+                groupId: uid,
+                isGroup: true,
+              }
+            : {
+                displayName: displayName,
+                photoURL: photoURL,
+                uid: uid,
+                isGroup: false,
+              }
+        )
       }
     >
       <View style={styles.item}>
@@ -113,6 +125,7 @@ function Contacts() {
         displayName={item.data.name}
         photoURL={item.data.photoURL}
         uid={item.id}
+        isGroup={item.isGroup}
       />
     );
   };

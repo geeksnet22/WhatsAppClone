@@ -18,6 +18,8 @@ function ChatWindow() {
   const navigation = useNavigation();
   const route = useRoute();
   const [messages, setMessages] = useState([]);
+  const [groupMessages, setGroupMessages] = useState([]);
+  const [groupMessageUsers, setGroupMessageUsers] = useState([]);
   const [messageInput, setMessageInput] = useState("");
 
   const ChatWindowLeftHeader = () => (
@@ -40,7 +42,9 @@ function ChatWindow() {
           fontSize: 20,
         }}
       >
-        {route.params?.displayName}
+        {route.params?.isGroup
+          ? route.params?.groupSubject
+          : route.params?.displayName}
       </Text>
     </View>
   );
@@ -82,6 +86,16 @@ function ChatWindow() {
           }))
         )
       );
+    db.collection(`groups/${route.params?.groupId}/chats`)
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) =>
+        setGroupMessages(
+          snapshot.docs.reverse().map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        )
+      );
   }, []);
 
   const renderItem = ({ item }) => {
@@ -101,7 +115,11 @@ function ChatWindow() {
     return (
       <View
         style={
-          item.data.type === "sent"
+          route.params?.isGroup
+            ? item.id === user.uid
+              ? styles.sentMessage
+              : styles.receivedMessage
+            : item.data.type === "sent"
             ? styles.sentMessage
             : styles.receivedMessage
         }
@@ -133,33 +151,44 @@ function ChatWindow() {
     if (!messageInput) {
       return;
     }
-    // add message to current user's data
-    db.collection(`users/${user.uid}/chats`).doc(route.params?.uid).set({
-      lastMessage: messageInput,
-      name: route.params?.displayName,
-      photoURL: route.params?.photoURL,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    // add message to sent user's data
-    db.collection(`users/${route.params?.uid}/chats`).doc(user.uid).set({
-      lastMessage: messageInput,
-      name: user.name,
-      photoURL: user.photoURL,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    db.collection(`users/${user.uid}/chats/${route.params?.uid}/messages`).add({
-      type: "sent",
-      content: messageInput,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    db.collection(`users/${route.params?.uid}/chats/${user.uid}/messages`).add({
-      type: "received",
-      content: messageInput,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    if (route.params?.isGroup) {
+      // add message to collection
+      db.collection(`groups/${route.params?.groupId}/chats`).doc(user.uid).set({
+        content: messageInput,
+        name: user.name,
+        photoURL: user.photoURL,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    } else {
+      // add message to current user's data
+      db.collection(`users/${user.uid}/chats`).doc(route.params?.uid).set({
+        lastMessage: messageInput,
+        name: route.params?.displayName,
+        photoURL: route.params?.photoURL,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      // add message to sent user's data
+      db.collection(`users/${route.params?.uid}/chats`).doc(user.uid).set({
+        lastMessage: messageInput,
+        name: user.name,
+        photoURL: user.photoURL,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      db.collection(
+        `users/${user.uid}/chats/${route.params?.uid}/messages`
+      ).add({
+        type: "sent",
+        content: messageInput,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      db.collection(
+        `users/${route.params?.uid}/chats/${user.uid}/messages`
+      ).add({
+        type: "received",
+        content: messageInput,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    }
     setMessageInput("");
   };
 
@@ -167,7 +196,7 @@ function ChatWindow() {
     <View style={{ flex: 1, backgroundColor: "#ECE5DD" }}>
       <SafeAreaView style={styles.container}>
         <FlatList
-          data={messages}
+          data={route.params?.isGroup ? groupMessages : messages}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
