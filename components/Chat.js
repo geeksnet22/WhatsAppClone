@@ -3,7 +3,16 @@ import React, { useEffect } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-function Chat({ displayName, photoURL, lastMessage, timestamp, uid }) {
+function Chat({
+  displayName,
+  photoURL,
+  lastMessage,
+  timestamp,
+  uid,
+  groupSubject,
+  iconURL,
+  lastUser,
+}) {
   const navigation = useNavigation();
 
   const getTimeAgo = () => {
@@ -30,25 +39,41 @@ function Chat({ displayName, photoURL, lastMessage, timestamp, uid }) {
 
   return (
     <TouchableOpacity
-      onPress={() =>
-        navigation.navigate("ChatWindow", {
-          displayName: displayName,
-          photoURL: photoURL,
-          uid: uid,
-        })
-      }
+      onPress={() => {
+        if (groupSubject) {
+          navigation.navigate("ChatWindow", {
+            groupSubject: groupSubject,
+            iconURL: iconURL,
+            groupId: uid,
+            isGroup: true,
+          });
+        } else {
+          navigation.navigate("ChatWindow", {
+            displayName: displayName,
+            photoURL: photoURL,
+            uid: uid,
+            isGroup: false,
+          });
+        }
+      }}
     >
       <View style={styles.container}>
         <Image
           style={styles.userAvatar}
           source={{
-            uri: photoURL,
+            uri: groupSubject ? iconURL : photoURL,
           }}
         />
         <View style={styles.textContainer}>
           <View style={styles.leftPortion}>
-            <Text style={styles.userName}>{displayName}</Text>
-            <Text style={styles.message}>{lastMessage}</Text>
+            <Text style={styles.userName}>
+              {groupSubject ? groupSubject : displayName}
+            </Text>
+            <Text style={styles.message}>
+              {groupSubject
+                ? `${lastUser?.split(" ")[0]}: ${lastMessage}`
+                : lastMessage}
+            </Text>
           </View>
           <Text style={styles.timeAgo}>{getTimeAgo()}</Text>
         </View>

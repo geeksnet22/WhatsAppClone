@@ -19,7 +19,6 @@ function ChatWindow() {
   const route = useRoute();
   const [messages, setMessages] = useState([]);
   const [groupMessages, setGroupMessages] = useState([]);
-  const [groupMessageUsers, setGroupMessageUsers] = useState([]);
   const [messageInput, setMessageInput] = useState("");
 
   const ChatWindowLeftHeader = () => (
@@ -116,7 +115,7 @@ function ChatWindow() {
       <View
         style={
           route.params?.isGroup
-            ? item.id === user.uid
+            ? item.data.uid === user.uid
               ? styles.sentMessage
               : styles.receivedMessage
             : item.data.type === "sent"
@@ -125,6 +124,11 @@ function ChatWindow() {
         }
       >
         <View>
+          {route.params?.isGroup && item.data.uid !== user.uid && (
+            <Text style={styles.groupUserName}>
+              {item.data.name.split(" ")[0]}
+            </Text>
+          )}
           <Text
             style={{
               fontSize: 15,
@@ -153,10 +157,11 @@ function ChatWindow() {
     }
     if (route.params?.isGroup) {
       // add message to collection
-      db.collection(`groups/${route.params?.groupId}/chats`).doc(user.uid).set({
+      db.collection(`groups/${route.params?.groupId}/chats`).add({
         content: messageInput,
         name: user.name,
         photoURL: user.photoURL,
+        uid: user.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
     } else {
@@ -273,6 +278,9 @@ const styles = StyleSheet.create({
     margin: 5,
     fontSize: 15,
     maxWidth: "80%",
+  },
+  groupUserName: {
+    color: "#128C7E",
   },
 });
 

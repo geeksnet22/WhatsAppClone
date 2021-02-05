@@ -12,6 +12,7 @@ function Chats({ navigation }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
   const [chats, setChats] = useState([]);
+  const [groupMessages, setGroupMessages] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -20,7 +21,7 @@ function Chats({ navigation }) {
   );
 
   useEffect(() => {
-    db.collection(`/users/${user.uid}/chats`)
+    db.collection(`users/${user.uid}/chats`)
       .orderBy("timestamp", "desc")
       .onSnapshot((snapshot) =>
         setChats(
@@ -30,23 +31,62 @@ function Chats({ navigation }) {
           }))
         )
       );
+    db.collection(`users/${user.uid}/groups`).onSnapshot((userSnapshot) => {
+      userSnapshot.docs.map((userDoc) => {
+        db.collection(`groups/${userDoc.id}/chats`)
+          .orderBy("timestamp", "desc")
+          .onSnapshot((groupSnapshot) => {
+            if (groupSnapshot.docs.length > 0) {
+              setGroupMessages({
+                groupSubject: userDoc.data().subject,
+                groupIcon: userDoc.data().icon,
+                id: userDoc.id,
+                data: groupSnapshot.docs[0]?.data(),
+              });
+            }
+          });
+      });
+    });
   }, []);
 
-  const renderItem = ({ item }) => (
-    <Chat
-      displayName={item.data.name}
-      photoURL={item.data.photoURL}
-      lastMessage={item.data.lastMessage}
-      timestamp={item.data.timestamp}
-      uid={item.id}
-    />
-  );
+  const renderItem = ({ item }) => {
+    if (item.groupSubject && item.data) {
+      return (
+        <Chat
+          groupSubject={item.groupSubject}
+          iconURL={item.groupIcon}
+          lastMessage={item.data.content}
+          lastUser={item.data.name}
+          timestamp={item.data.timestamp}
+          uid={item.id}
+        />
+      );
+    } else {
+      return (
+        <Chat
+          displayName={item.data.name}
+          photoURL={item.data.photoURL}
+          lastMessage={item.data.lastMessage}
+          timestamp={item.data.timestamp}
+          uid={item.id}
+        />
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
         <FlatList
-          data={chats}
+          data={chats
+            .concat(groupMessages)
+            .sort((a, b) =>
+              a.data?.timestamp < b.data?.timestamp
+                ? 1
+                : b.data?.timestamp < a.data?.timestamp
+                ? -1
+                : 0
+            )}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
