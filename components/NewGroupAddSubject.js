@@ -136,7 +136,7 @@ function NewGroupAddSubject() {
       </View>
       <View style={styles.usersInfoContainer}>
         {route.params?.selectedUsers.map((contact) => (
-          <View style={styles.userItemContainer}>
+          <View key={contact.id} style={styles.userItemContainer}>
             <Image
               style={styles.userAvatar}
               source={{

@@ -31,18 +31,20 @@ function Chats({ navigation }) {
           }))
         )
       );
+    const tempGroupMessages = [];
     db.collection(`users/${user.uid}/groups`).onSnapshot((userSnapshot) => {
-      userSnapshot.docs.map((userDoc) => {
+      userSnapshot.docs.forEach((userDoc) => {
         db.collection(`groups/${userDoc.id}/chats`)
           .orderBy("timestamp", "desc")
           .onSnapshot((groupSnapshot) => {
             if (groupSnapshot.docs && groupSnapshot.docs.length > 0) {
-              setGroupMessages({
+              tempGroupMessages.push({
+                id: userDoc.id,
                 groupSubject: userDoc.data().subject,
                 groupIcon: userDoc.data().icon,
-                id: userDoc.id,
                 data: groupSnapshot.docs[0].data(),
               });
+              setGroupMessages(tempGroupMessages.concat([]));
             }
           });
       });
