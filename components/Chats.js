@@ -36,12 +36,12 @@ function Chats({ navigation }) {
         db.collection(`groups/${userDoc.id}/chats`)
           .orderBy("timestamp", "desc")
           .onSnapshot((groupSnapshot) => {
-            if (groupSnapshot.docs.length > 0) {
+            if (groupSnapshot.docs && groupSnapshot.docs.length > 0) {
               setGroupMessages({
                 groupSubject: userDoc.data().subject,
                 groupIcon: userDoc.data().icon,
                 id: userDoc.id,
-                data: groupSnapshot.docs[0]?.data(),
+                data: groupSnapshot.docs[0].data(),
               });
             }
           });

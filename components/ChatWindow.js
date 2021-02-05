@@ -75,26 +75,29 @@ function ChatWindow() {
   }, []);
 
   useEffect(() => {
-    db.collection(`users/${user.uid}/chats/${route.params?.uid}/messages`)
-      .orderBy("timestamp", "desc")
-      .onSnapshot((snapshot) =>
-        setMessages(
-          snapshot.docs.reverse().map((doc) => ({
-            id: doc.id,
-            data: doc.data(),
-          }))
-        )
-      );
-    db.collection(`groups/${route.params?.groupId}/chats`)
-      .orderBy("timestamp", "desc")
-      .onSnapshot((snapshot) =>
-        setGroupMessages(
-          snapshot.docs.reverse().map((doc) => ({
-            id: doc.id,
-            data: doc.data(),
-          }))
-        )
-      );
+    if (route.params?.isGroup) {
+      db.collection(`groups/${route.params?.groupId}/chats`)
+        .orderBy("timestamp", "desc")
+        .onSnapshot((snapshot) =>
+          setGroupMessages(
+            snapshot.docs.reverse().map((doc) => ({
+              id: doc.id,
+              data: doc.data(),
+            }))
+          )
+        );
+    } else {
+      db.collection(`users/${user.uid}/chats/${route.params?.uid}/messages`)
+        .orderBy("timestamp", "desc")
+        .onSnapshot((snapshot) =>
+          setMessages(
+            snapshot.docs.reverse().map((doc) => ({
+              id: doc.id,
+              data: doc.data(),
+            }))
+          )
+        );
+    }
   }, []);
 
   const renderItem = ({ item }) => {
