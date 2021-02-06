@@ -167,6 +167,19 @@ function ChatWindow() {
         uid: user.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
+      db.collection(`groups/${route.params?.groupId}/participants`).onSnapshot(
+        (snapshot) =>
+          snapshot.docs.forEach((doc) =>
+            db
+              .collection(`users/${doc.id}/groups`)
+              .doc(route.params?.groupId)
+              .update({
+                lastMessage: messageInput,
+                lastUser: user.name,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              })
+          )
+      );
     } else {
       // add message to current user's data
       db.collection(`users/${user.uid}/chats`).doc(route.params?.uid).set({

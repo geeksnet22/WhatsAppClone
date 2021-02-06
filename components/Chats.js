@@ -12,7 +12,7 @@ function Chats({ navigation }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
   const [chats, setChats] = useState([]);
-  const [groupMessages, setGroupMessages] = useState([]);
+  const [groups, setGroups] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -31,39 +31,29 @@ function Chats({ navigation }) {
           }))
         )
       );
-    const tempGroupMessages = [];
-    db.collection(`users/${user.uid}/groups`).onSnapshot((userSnapshot) => {
-      userSnapshot.docs.forEach((userDoc) => {
-        db.collection(`groups/${userDoc.id}/chats`)
-          .orderBy("timestamp", "desc")
-          .onSnapshot((groupSnapshot) => {
-            if (groupSnapshot.docs && groupSnapshot.docs.length > 0) {
-              tempGroupMessages.push({
-                id: userDoc.id,
-                groupSubject: userDoc.data().subject,
-                groupIcon: userDoc.data().icon,
-                data: groupSnapshot.docs[0].data(),
-              });
-              setGroupMessages(tempGroupMessages.concat([]));
-            }
-          });
-      });
-    });
+    db.collection(`users/${user.uid}/groups`).onSnapshot((userSnapshot) =>
+      setGroups(
+        userSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    );
   }, []);
 
   const renderItem = ({ item }) => {
-    if (item.groupSubject && item.data) {
+    if (item.data.subject && item.data.lastMessage) {
       return (
         <Chat
-          groupSubject={item.groupSubject}
-          iconURL={item.groupIcon}
-          lastMessage={item.data.content}
-          lastUser={item.data.name}
+          groupSubject={item.data.subject}
+          iconURL={item.data.icon}
+          lastMessage={item.data.lastMessage}
+          lastUser={item.data.lastUser}
           timestamp={item.data.timestamp}
           uid={item.id}
         />
       );
-    } else {
+    } else if (!item.data.subject) {
       return (
         <Chat
           displayName={item.data.name}
@@ -81,7 +71,7 @@ function Chats({ navigation }) {
       <SafeAreaView style={styles.container}>
         <FlatList
           data={chats
-            .concat(groupMessages)
+            .concat(groups)
             .sort((a, b) =>
               a.data?.timestamp < b.data?.timestamp
                 ? 1
