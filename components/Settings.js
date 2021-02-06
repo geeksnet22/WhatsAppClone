@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Image, Text } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
@@ -8,10 +8,25 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { db } from "../firebaseConfig";
 
 function Settings() {
   const user = useSelector((state) => state.user.user);
   const navigation = useNavigation();
+  const [about, setAbout] = useState("");
+
+  useEffect(() => {
+    db.collection("users")
+      .doc(user.uid)
+      .get()
+      .then((doc) => {
+        if (doc.exists && doc.data().about) {
+          setAbout(doc.data().about);
+        } else {
+          setAbout("");
+        }
+      });
+  }, []);
 
   return (
     <ScrollView style={styles.container}>
@@ -21,6 +36,7 @@ function Settings() {
           navigation.navigate("Profile", {
             photoURL: user.photoURL,
             name: user.name,
+            about: about,
           })
         }
       >
@@ -32,7 +48,7 @@ function Settings() {
         />
         <View style={styles.userInfoTextContainer}>
           <Text style={styles.userName}>{user.name}</Text>
-          <Text style={styles.userStatus}>Battery about to die</Text>
+          <Text style={styles.userStatus}>{about}</Text>
         </View>
       </TouchableOpacity>
       <View style={styles.menuContainer}>

@@ -1,17 +1,82 @@
 import { useRoute } from "@react-navigation/native";
-import React from "react";
-import { View, StyleSheet, Image, Text } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import React, { useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Image, Text, TextInputBase } from "react-native";
+import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { db } from "../firebaseConfig";
+import { setName } from "../redux/user/UserActions";
 
 function Profile() {
   const user = useSelector((state) => state.user.user);
   const route = useRoute();
+  const [userName, setUserName] = useState(user.name);
+  const [about, setAbout] = useState(route.params?.about);
+  const [isInfoInputModalVisible, setIsInfoInputModalVisible] = useState(false);
+  const [inputModalType, setInputModalInputType] = useState("name");
+  const dispatch = useDispatch();
+  const inputRef = useRef();
+
+  useEffect(() => {
+    inputRef.focus();
+  }, []);
+
+  const InfoInputModal = () => (
+    <View style={styles.infoInputModal}>
+      <Text style={styles.infoInputModalText}>
+        {inputModalType === "name" ? "Enter you name" : "Add about"}
+      </Text>
+      <TextInput
+        ref={inputRef}
+        style={styles.infoInputModalInput}
+        onChangeText={
+          inputModalType === "name"
+            ? (userName) => setUserName(userName)
+            : (about) => setAbout(about)
+        }
+        defaultValue={inputModalType === "name" ? userName : about}
+        autoFocus={true}
+      />
+      <View style={styles.infoInputModalButtonsContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            setIsInfoInputModalVisible(false);
+            db.collection("users")
+              .doc(user.uid)
+              .get()
+              .then((doc) =>
+                inputModalType === "name"
+                  ? setUserName(doc.data().name)
+                  : setAbout(doc.data().about ? doc.data().about : "")
+              );
+          }}
+        >
+          <Text style={styles.infoInputModalButton}>CANCEL</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text
+            onPress={() => {
+              setIsInfoInputModalVisible(false);
+              inputModalType === "name"
+                ? db.collection("users").doc(user.uid).update({
+                    name: userName,
+                  })
+                : db.collection("users").doc(user.uid).update({
+                    about: about,
+                  });
+              dispatch(setName({ name: userName }));
+            }}
+            style={styles.infoInputModalButton}
+          >
+            SAVE
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -23,7 +88,13 @@ function Profile() {
           }}
         />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.nameContainer}>
+      <TouchableOpacity
+        onPress={() => {
+          setInputModalInputType("name");
+          setIsInfoInputModalVisible(true);
+        }}
+        style={styles.nameContainer}
+      >
         <Ionicons
           style={styles.nameIcon}
           name="person"
@@ -34,7 +105,7 @@ function Profile() {
           <View style={styles.nameInfoContainer}>
             <View>
               <Text style={styles.textItemTitle}>Name</Text>
-              <Text>{route.params?.name}</Text>
+              <Text>{userName}</Text>
             </View>
             <MaterialCommunityIcons name="pencil" size={20} color="gray" />
           </View>
@@ -44,7 +115,13 @@ function Profile() {
           </Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.aboutContainer}>
+      <TouchableOpacity
+        onPress={() => {
+          setInputModalInputType("about");
+          setIsInfoInputModalVisible(true);
+        }}
+        style={styles.aboutContainer}
+      >
         <AntDesign
           style={styles.icon}
           name="infocirlceo"
@@ -54,7 +131,7 @@ function Profile() {
         <View style={styles.aboutRightItem}>
           <View>
             <Text style={styles.textItemTitle}>About</Text>
-            <Text>Battery about to die</Text>
+            <Text>{about}</Text>
           </View>
           <MaterialCommunityIcons name="pencil" size={20} color="gray" />
         </View>
@@ -71,6 +148,7 @@ function Profile() {
           <Text>{user.email}</Text>
         </View>
       </TouchableOpacity>
+      {isInfoInputModalVisible && <InfoInputModal />}
     </View>
   );
 }
@@ -139,6 +217,38 @@ const styles = StyleSheet.create({
   },
   phoneTextContainer: {
     marginLeft: 20,
+  },
+  infoInputModal: {
+    position: "absolute",
+    bottom: 0,
+    height: 150,
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+  },
+  infoInputModalButtonsContainer: {
+    flexDirection: "row",
+    alignSelf: "flex-end",
+  },
+  infoInputModalText: {
+    alignSelf: "flex-start",
+    fontWeight: "bold",
+  },
+  infoInputModalButton: {
+    padding: 10,
+    color: "#128C7E",
+  },
+  infoInputModalInput: {
+    padding: 10,
+    borderRadius: 10,
+    borderBottomColor: "#128C7E",
+    borderBottomWidth: 1,
+    margin: 5,
+    alignSelf: "stretch",
+    color: "black",
+    fontSize: 17,
   },
 });
 

@@ -80,7 +80,7 @@ function ChatWindow() {
         .orderBy("timestamp", "desc")
         .onSnapshot((snapshot) =>
           setGroupMessages(
-            snapshot.docs.reverse().map((doc) => ({
+            snapshot.docs.map((doc) => ({
               id: doc.id,
               data: doc.data(),
             }))
@@ -91,7 +91,7 @@ function ChatWindow() {
         .orderBy("timestamp", "desc")
         .onSnapshot((snapshot) =>
           setMessages(
-            snapshot.docs.reverse().map((doc) => ({
+            snapshot.docs.map((doc) => ({
               id: doc.id,
               data: doc.data(),
             }))
@@ -217,6 +217,7 @@ function ChatWindow() {
     <View style={{ flex: 1, backgroundColor: "#ECE5DD" }}>
       <SafeAreaView style={styles.container}>
         <FlatList
+          inverted
           data={route.params?.isGroup ? groupMessages : messages}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
