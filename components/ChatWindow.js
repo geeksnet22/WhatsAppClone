@@ -32,7 +32,9 @@ function ChatWindow() {
         <Image
           style={styles.userAvatar}
           source={{
-            uri: route.params?.photoURL,
+            uri: route.params?.isGroup
+              ? route.params?.iconURL
+              : route.params?.photoURL,
           }}
         />
       </TouchableOpacity>
