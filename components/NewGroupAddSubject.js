@@ -78,24 +78,18 @@ function NewGroupAddSubject() {
     const participantsRef = db.collection(`groups/${groupId}/participants`);
     // group admin
     participantsRef.doc(user.uid).set({
-      name: user.name,
-      email: user.email,
-      photoURL: user.photoURL,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
     db.collection(`users/${user.uid}/groups`).doc(groupId).set({
-      icon: iconURL,
-      subject: groupSubject,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
     // group participants
     route.params?.selectedUsers.forEach((participant) => {
       participantsRef.doc(participant.id).set({
-        name: participant.data.name,
-        email: participant.data.email,
-        photoURL: participant.data.photoURL,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
       db.collection(`users/${participant.id}/groups`).doc(groupId).set({
-        icon: iconURL,
-        subject: groupSubject,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
     });
     navigation.navigate("Home");

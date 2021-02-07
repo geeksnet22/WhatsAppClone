@@ -8,26 +8,31 @@ import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { db } from "../firebaseConfig";
-import { setName } from "../redux/user/UserActions";
+import { setName, setReduxPhotoURL } from "../redux/user/UserActions";
 
 function Profile() {
   const user = useSelector((state) => state.user.user);
   const route = useRoute();
   const [userName, setUserName] = useState(user.name);
   const [about, setAbout] = useState(route.params?.about);
+  const [photoURL, setPhotoURL] = useState(user.photoURL);
   const [isInfoInputModalVisible, setIsInfoInputModalVisible] = useState(false);
   const [inputModalType, setInputModalInputType] = useState("name");
   const dispatch = useDispatch();
   const inputRef = useRef();
 
   useEffect(() => {
-    inputRef.focus();
-  }, []);
+    inputRef.current?.focus();
+  }, [userName, about]);
 
   const InfoInputModal = () => (
     <View style={styles.infoInputModal}>
       <Text style={styles.infoInputModalText}>
-        {inputModalType === "name" ? "Enter you name" : "Add about"}
+        {inputModalType === "name"
+          ? "Enter you name"
+          : inputModalType === "about"
+          ? "Add about"
+          : "Add profile photo URL"}
       </Text>
       <TextInput
         ref={inputRef}
@@ -35,9 +40,17 @@ function Profile() {
         onChangeText={
           inputModalType === "name"
             ? (userName) => setUserName(userName)
-            : (about) => setAbout(about)
+            : inputModalType === "about"
+            ? (about) => setAbout(about)
+            : (photoURL) => setPhotoURL(photoURL)
         }
-        defaultValue={inputModalType === "name" ? userName : about}
+        defaultValue={
+          inputModalType === "name"
+            ? userName
+            : inputModalType === "about"
+            ? about
+            : photoURL
+        }
         autoFocus={true}
       />
       <View style={styles.infoInputModalButtonsContainer}>
@@ -50,7 +63,9 @@ function Profile() {
               .then((doc) =>
                 inputModalType === "name"
                   ? setUserName(doc.data().name)
-                  : setAbout(doc.data().about ? doc.data().about : "")
+                  : inputModalType === "about"
+                  ? setAbout(doc.data().about ? doc.data().about : "")
+                  : setPhotoURL(user.photoURL)
               );
           }}
         >
@@ -64,10 +79,18 @@ function Profile() {
                 ? db.collection("users").doc(user.uid).update({
                     name: userName,
                   })
-                : db.collection("users").doc(user.uid).update({
+                : inputModalType === "about"
+                ? db.collection("users").doc(user.uid).update({
                     about: about,
-                  });
-              dispatch(setName({ name: userName }));
+                  })
+                : setPhotoURL(
+                    db.collection("users").doc(user.uid).update({
+                      photoURL: photoURL,
+                    })
+                  );
+              inputModalType === "name"
+                ? dispatch(setName({ name: userName }))
+                : dispatch(setReduxPhotoURL({ photoURL: photoURL }));
             }}
             style={styles.infoInputModalButton}
           >
@@ -80,7 +103,12 @@ function Profile() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          setInputModalInputType("photo");
+          setIsInfoInputModalVisible(true);
+        }}
+      >
         <Image
           style={styles.avatar}
           source={{

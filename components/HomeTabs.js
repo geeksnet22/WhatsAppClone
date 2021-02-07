@@ -34,7 +34,10 @@ function HomeTabs() {
       ),
       headerRight: () => (
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.headerRightIcon}>
+          <TouchableOpacity
+            onPress={() => console.log("searching")}
+            style={styles.headerRightIcon}
+          >
             <Ionicons name="search" size={20} color="#FFFFFF" />
           </TouchableOpacity>
           <TouchableOpacity

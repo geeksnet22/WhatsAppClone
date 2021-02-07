@@ -1,4 +1,4 @@
-import { LOGIN, LOGOUT, SET_NAME } from "./UserActionTypes";
+import { LOGIN, LOGOUT, SET_NAME, SET_PHOTO_URL } from "./UserActionTypes";
 
 const INITIAL_STATE = {
   user: null,
@@ -12,6 +12,11 @@ const userReducer = (state = INITIAL_STATE, action) => {
       return { ...state, user: null };
     case SET_NAME:
       return { ...state, user: { ...state.user, name: action.payload.name } };
+    case SET_PHOTO_URL:
+      return {
+        ...state,
+        user: { ...state.user, photoURL: action.payload.photoURL },
+      };
     default:
       return state;
   }

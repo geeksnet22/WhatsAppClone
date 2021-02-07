@@ -1,19 +1,40 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 function Chat({
-  displayName,
-  photoURL,
+  messagedUserDataPromise,
+  lastUserDataPromise,
+  groupDataPromise,
   lastMessage,
   timestamp,
   uid,
-  groupSubject,
-  iconURL,
-  lastUser,
+  isGroup,
 }) {
   const navigation = useNavigation();
+  const [messagedUserName, setMessagedUserName] = useState("");
+  const [messagedUserPhotoURL, setMessagedUserPhotoURL] = useState("");
+  const [groupSubject, setGroupSubject] = useState("");
+  const [groupIconURL, setGroupIconURL] = useState("");
+  const [lastUserUserName, setLastUserUserName] = useState("");
+
+  useEffect(() => {
+    if (isGroup) {
+      groupDataPromise.then((groupData) => {
+        setGroupSubject(groupData.subject);
+        setGroupIconURL(groupData.iconURL);
+      });
+      lastUserDataPromise.then((lastUserData) => {
+        setLastUserUserName(lastUserData.name);
+      });
+    } else {
+      messagedUserDataPromise.then((userData) => {
+        setMessagedUserName(userData.name);
+        setMessagedUserPhotoURL(userData.photoURL);
+      });
+    }
+  }, [groupDataPromise, lastUserDataPromise, messagedUserDataPromise]);
 
   const getTimeAgo = () => {
     if (!timestamp) {
@@ -43,14 +64,14 @@ function Chat({
         if (groupSubject) {
           navigation.navigate("ChatWindow", {
             groupSubject: groupSubject,
-            iconURL: iconURL,
+            iconURL: groupIconURL,
             groupId: uid,
             isGroup: true,
           });
         } else {
           navigation.navigate("ChatWindow", {
-            displayName: displayName,
-            photoURL: photoURL,
+            displayName: messagedUserName,
+            photoURL: messagedUserPhotoURL,
             uid: uid,
             isGroup: false,
           });
@@ -61,17 +82,17 @@ function Chat({
         <Image
           style={styles.userAvatar}
           source={{
-            uri: groupSubject ? iconURL : photoURL,
+            uri: isGroup ? groupIconURL : messagedUserPhotoURL,
           }}
         />
         <View style={styles.textContainer}>
           <View style={styles.leftPortion}>
             <Text style={styles.userName}>
-              {groupSubject ? groupSubject : displayName}
+              {isGroup ? groupSubject : messagedUserName}
             </Text>
             <Text style={styles.message}>
-              {groupSubject
-                ? `${lastUser?.split(" ")[0]}: ${lastMessage}`
+              {isGroup
+                ? `${lastUserUserName?.split(" ")[0]}: ${lastMessage}`
                 : lastMessage}
             </Text>
           </View>

@@ -28,39 +28,56 @@ function Chats({ navigation }) {
           snapshot.docs.map((doc) => ({
             id: doc.id,
             data: doc.data(),
+            messagedUserDataPromise: db
+              .collection("users")
+              .doc(doc.data().lastUser)
+              .get()
+              .then((userDoc) => userDoc.data()),
           }))
         )
       );
-    db.collection(`users/${user.uid}/groups`).onSnapshot((userSnapshot) =>
+    db.collection(`users/${user.uid}/groups`).onSnapshot((userSnapshot) => {
       setGroups(
         userSnapshot.docs.map((doc) => ({
           id: doc.id,
           data: doc.data(),
+          lastUserDataPromise: db
+            .collection("users")
+            .doc(doc.data().lastUser)
+            .get()
+            .then((userDoc) => userDoc.data()),
+          groupDataPromise: db
+            .collection("groups")
+            .doc(doc.id)
+            .get()
+            .then((groupDoc) => groupDoc.data()),
         }))
-      )
-    );
+      );
+    });
   }, []);
 
   const renderItem = ({ item }) => {
-    if (item.data.subject && item.data.lastMessage) {
-      return (
+    if (item.groupDataPromise) {
+      return item.data.lastMessage ? (
         <Chat
-          groupSubject={item.data.subject}
-          iconURL={item.data.icon}
           lastMessage={item.data.lastMessage}
-          lastUser={item.data.lastUser}
+          lastUserDataPromise={item.lastUserDataPromise}
+          groupDataPromise={item.groupDataPromise}
           timestamp={item.data.timestamp}
           uid={item.id}
+          isGroup={true}
         />
+      ) : (
+        <></>
       );
-    } else if (!item.data.subject) {
+    } else {
       return (
         <Chat
-          displayName={item.data.name}
-          photoURL={item.data.photoURL}
+          messagedUserDataPromise={item.messagedUserDataPromise}
           lastMessage={item.data.lastMessage}
           timestamp={item.data.timestamp}
           uid={item.id}
+          isGroup={false}
         />
       );
     }

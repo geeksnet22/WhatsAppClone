@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
+import ContactItem from "./ContactItem";
 
 function Contacts() {
   const user = useSelector((state) => state.user.user);
@@ -61,10 +62,11 @@ function Contacts() {
       setGroups(
         snapshot.docs.map((doc) => ({
           id: doc.id,
-          data: {
-            name: doc.data().subject,
-            photoURL: doc.data().icon,
-          },
+          groupDataPromise: db
+            .collection("groups")
+            .doc(doc.id)
+            .get()
+            .then((groupDoc) => groupDoc.data()),
           isGroup: true,
         }))
       )
@@ -83,51 +85,27 @@ function Contacts() {
     </TouchableOpacity>
   );
 
-  const ContactItem = ({ displayName, photoURL, uid, isGroup }) => (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.navigate(
-          "ChatWindow",
-          isGroup
-            ? {
-                groupSubject: displayName,
-                iconURL: photoURL,
-                groupId: uid,
-                isGroup: true,
-              }
-            : {
-                displayName: displayName,
-                photoURL: photoURL,
-                uid: uid,
-                isGroup: false,
-              }
-        )
-      }
-    >
-      <View style={styles.item}>
-        <Image
-          style={styles.avatar}
-          source={{
-            uri: photoURL,
-          }}
-        />
-        <Text style={styles.displayName}>{displayName}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
   const renderContact = ({ item }) => {
     if (item.newGroupIcon) {
       return <NewGroupItem />;
+    } else if (item.groupDataPromise) {
+      return (
+        <ContactItem
+          groupDataPromise={item.groupDataPromise}
+          uid={item.id}
+          isGroup={true}
+        />
+      );
+    } else {
+      return (
+        <ContactItem
+          userDisplayName={item.data.name}
+          userPhotoURL={item.data.photoURL}
+          uid={item.id}
+          isGroup={false}
+        />
+      );
     }
-    return (
-      <ContactItem
-        displayName={item.data.name}
-        photoURL={item.data.photoURL}
-        uid={item.id}
-        isGroup={item.isGroup}
-      />
-    );
   };
 
   return (
@@ -165,14 +143,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
-  },
-  avatar: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    backgroundColor: "gray",
-    alignItems: "center",
-    justifyContent: "center",
   },
   displayName: {
     fontSize: 20,

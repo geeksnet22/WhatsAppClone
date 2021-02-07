@@ -12,6 +12,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import MessageItem from "./MessageItem";
 
 function ChatWindow() {
   const user = useSelector((state) => state.user.user);
@@ -83,6 +84,12 @@ function ChatWindow() {
             snapshot.docs.map((doc) => ({
               id: doc.id,
               data: doc.data(),
+              isGroup: true,
+              userDataPromise: db
+                .collection("users")
+                .doc(doc.data().uid)
+                .get()
+                .then((doc) => doc.data()),
             }))
           )
         );
@@ -94,65 +101,12 @@ function ChatWindow() {
             snapshot.docs.map((doc) => ({
               id: doc.id,
               data: doc.data(),
+              isGroup: false,
             }))
           )
         );
     }
   }, []);
-
-  const renderItem = ({ item }) => {
-    const getTime = (timestamp) => {
-      if (!timestamp) {
-        return;
-      }
-      const date = timestamp.toDate();
-      var hour = date.getHours();
-      var minute = date.getMinutes();
-      const ampm = hour >= 12 ? "pm" : "am";
-      hour = hour % 12;
-      minute = minute < 10 ? "0" + minute : minute;
-      return `${hour}:${minute} ${ampm}`;
-    };
-
-    return (
-      <View
-        style={
-          route.params?.isGroup
-            ? item.data.uid === user.uid
-              ? styles.sentMessage
-              : styles.receivedMessage
-            : item.data.type === "sent"
-            ? styles.sentMessage
-            : styles.receivedMessage
-        }
-      >
-        <View>
-          {route.params?.isGroup && item.data.uid !== user.uid && (
-            <Text style={styles.groupUserName}>
-              {item.data.name.split(" ")[0]}
-            </Text>
-          )}
-          <Text
-            style={{
-              fontSize: 15,
-              marginRight: 70,
-            }}
-          >
-            {item.data.content}
-          </Text>
-          <Text
-            style={{
-              color: "gray",
-              alignSelf: "flex-end",
-              marginTop: -15,
-            }}
-          >
-            {getTime(item.data.timestamp)}
-          </Text>
-        </View>
-      </View>
-    );
-  };
 
   const sendMessage = () => {
     if (!messageInput) {
@@ -162,8 +116,6 @@ function ChatWindow() {
       // add message to collection
       db.collection(`groups/${route.params?.groupId}/chats`).add({
         content: messageInput,
-        name: user.name,
-        photoURL: user.photoURL,
         uid: user.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
@@ -175,7 +127,7 @@ function ChatWindow() {
               .doc(route.params?.groupId)
               .update({
                 lastMessage: messageInput,
-                lastUser: user.name,
+                lastUser: user.uid,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
               })
           )
@@ -184,15 +136,13 @@ function ChatWindow() {
       // add message to current user's data
       db.collection(`users/${user.uid}/chats`).doc(route.params?.uid).set({
         lastMessage: messageInput,
-        name: route.params?.displayName,
-        photoURL: route.params?.photoURL,
+        lastUser: route.params?.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
       // add message to sent user's data
       db.collection(`users/${route.params?.uid}/chats`).doc(user.uid).set({
         lastMessage: messageInput,
-        name: user.name,
-        photoURL: user.photoURL,
+        lastUser: user.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
       db.collection(
@@ -211,6 +161,10 @@ function ChatWindow() {
       });
     }
     setMessageInput("");
+  };
+
+  const renderItem = ({ item }) => {
+    return <MessageItem item={item} />;
   };
 
   return (
@@ -277,27 +231,6 @@ const styles = StyleSheet.create({
     borderRadius: 22.5,
     justifyContent: "center",
     alignItems: "center",
-  },
-  sentMessage: {
-    padding: 5,
-    backgroundColor: "#DCF8C6",
-    borderRadius: 10,
-    alignSelf: "flex-end",
-    margin: 5,
-    fontSize: 15,
-    maxWidth: "80%",
-  },
-  receivedMessage: {
-    padding: 5,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10,
-    alignSelf: "flex-start",
-    margin: 5,
-    fontSize: 15,
-    maxWidth: "80%",
-  },
-  groupUserName: {
-    color: "#128C7E",
   },
 });
 
