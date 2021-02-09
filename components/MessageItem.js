@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function MessageItem({ item }) {
   const user = useSelector((state) => state.user.user);
   const [userName, setUserName] = useState("");
+  const [isSeen, setIsSeen] = useState(false);
 
   useEffect(() => {
     if (item.isGroup) {
@@ -44,20 +46,33 @@ function MessageItem({ item }) {
         <Text
           style={{
             fontSize: 15,
-            marginRight: 70,
+            marginRight: 90,
           }}
         >
           {item.data.content}
         </Text>
-        <Text
+        <View
           style={{
-            color: "gray",
             alignSelf: "flex-end",
             marginTop: -15,
+            flexDirection: "row",
+            alignItems: "center",
           }}
         >
-          {getTime(item.data.timestamp)}
-        </Text>
+          <Text
+            style={{
+              color: "gray",
+              marginRight: 5,
+            }}
+          >
+            {getTime(item.data.timestamp)}
+          </Text>
+          <MaterialCommunityIcons
+            name="check-all"
+            size={20}
+            color={isSeen ? "#34B7F1" : "gray"}
+          />
+        </View>
       </View>
     </View>
   );

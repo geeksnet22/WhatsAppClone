@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
   },
   leftPortion: {
     flexDirection: "column",
+    maxWidth: "80%",
   },
   userName: {
     fontSize: 20,
