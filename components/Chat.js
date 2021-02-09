@@ -60,23 +60,21 @@ function Chat({
 
   return (
     <TouchableOpacity
-      onPress={() => {
-        if (groupSubject) {
-          navigation.navigate("ChatWindow", {
-            groupSubject: groupSubject,
-            iconURL: groupIconURL,
-            groupId: uid,
-            isGroup: true,
-          });
-        } else {
-          navigation.navigate("ChatWindow", {
-            displayName: messagedUserName,
-            photoURL: messagedUserPhotoURL,
-            uid: uid,
-            isGroup: false,
-          });
-        }
-      }}
+      onPress={() =>
+        groupSubject
+          ? navigation.navigate("ChatWindow", {
+              groupSubject: groupSubject,
+              iconURL: groupIconURL,
+              groupId: uid,
+              isGroup: true,
+            })
+          : navigation.navigate("ChatWindow", {
+              displayName: messagedUserName,
+              photoURL: messagedUserPhotoURL,
+              uid: uid,
+              isGroup: false,
+            })
+      }
     >
       <View style={styles.container}>
         <Image

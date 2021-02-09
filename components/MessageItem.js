@@ -11,8 +11,10 @@ function MessageItem({ item }) {
   useEffect(() => {
     if (item.isGroup) {
       item.userDataPromise.then((userData) => setUserName(userData.name));
+    } else {
+      setIsSeen(item.data.seen);
     }
-  }, []);
+  }, [item]);
 
   const getTime = (timestamp) => {
     if (!timestamp) {
@@ -67,11 +69,13 @@ function MessageItem({ item }) {
           >
             {getTime(item.data.timestamp)}
           </Text>
-          <MaterialCommunityIcons
-            name="check-all"
-            size={20}
-            color={isSeen ? "#34B7F1" : "gray"}
-          />
+          {item.data.type === "sent" && (
+            <MaterialCommunityIcons
+              name="check-all"
+              size={20}
+              color={isSeen ? "#34B7F1" : "gray"}
+            />
+          )}
         </View>
       </View>
     </View>

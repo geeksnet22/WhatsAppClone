@@ -1,5 +1,17 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
-import { SafeAreaView, View, StyleSheet, Text, Image } from "react-native";
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from "react";
+import {
+  SafeAreaView,
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  Alert,
+} from "react-native";
 import {
   FlatList,
   TextInput,
@@ -107,13 +119,23 @@ function ChatWindow() {
             }))
           )
         );
+      db.collection(`users/${route.params?.uid}/chats/${user.uid}/messages`)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) =>
+            doc.ref.update({
+              seen: true,
+            })
+          );
+        });
     }
-  }, []);
+  }, [db]);
 
   const sendMessage = () => {
     if (!messageInput) {
       return;
     }
+
     if (route.params?.isGroup) {
       // add message to collection
       db.collection(`groups/${route.params?.groupId}/chats`).add({
@@ -121,8 +143,9 @@ function ChatWindow() {
         uid: user.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
-      db.collection(`groups/${route.params?.groupId}/participants`).onSnapshot(
-        (snapshot) =>
+      db.collection(`groups/${route.params?.groupId}/participants`)
+        .get()
+        .then((snapshot) =>
           snapshot.docs.forEach((doc) =>
             db
               .collection(`users/${doc.id}/groups`)
@@ -133,18 +156,13 @@ function ChatWindow() {
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
               })
           )
-      );
+        );
     } else {
       // add message to current user's data
       db.collection(`users/${user.uid}/chats`).doc(route.params?.uid).set({
         lastMessage: messageInput,
+        seen: false,
         lastUser: route.params?.uid,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      });
-      // add message to sent user's data
-      db.collection(`users/${route.params?.uid}/chats`).doc(user.uid).set({
-        lastMessage: messageInput,
-        lastUser: user.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
       db.collection(
@@ -152,6 +170,13 @@ function ChatWindow() {
       ).add({
         type: "sent",
         content: messageInput,
+        seen: false,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      // add message to receiving user's data
+      db.collection(`users/${route.params?.uid}/chats`).doc(user.uid).set({
+        lastMessage: messageInput,
+        lastUser: user.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
       db.collection(
@@ -161,8 +186,8 @@ function ChatWindow() {
         content: messageInput,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
+      setMessageInput("");
     }
-    setMessageInput("");
   };
 
   const renderItem = ({ item }) => {
