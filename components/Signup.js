@@ -6,7 +6,10 @@ import {
   TextInput,
 } from "react-native-gesture-handler";
 import { useDispatch } from "react-redux";
+import { auth, db } from "../firebaseConfig";
 import whatsappLogo from "../images/WhatsApp-Logo.png";
+import { login } from "../redux/user/UserActions";
+import firebase from "firebase";
 
 function Signup() {
   const dispatch = useDispatch();

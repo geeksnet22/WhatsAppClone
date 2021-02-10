@@ -45,7 +45,7 @@ function Contacts() {
   }, [navigation]);
 
   useEffect(() => {
-    db.collection("users").onSnapshot((snapshot) => {
+    const userUnsubscribe = db.collection("users").onSnapshot((snapshot) => {
       setContacts(
         [{ newGroupIcon: "newGroup" }].concat(
           snapshot.docs
@@ -58,19 +58,25 @@ function Contacts() {
         )
       );
     });
-    db.collection(`users/${user.uid}/groups`).onSnapshot((snapshot) =>
-      setGroups(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          groupDataPromise: db
-            .collection("groups")
-            .doc(doc.id)
-            .get()
-            .then((groupDoc) => groupDoc.data()),
-          isGroup: true,
-        }))
-      )
-    );
+    const groupUnsubscribe = db
+      .collection(`users/${user.uid}/groups`)
+      .onSnapshot((snapshot) =>
+        setGroups(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            groupDataPromise: db
+              .collection("groups")
+              .doc(doc.id)
+              .get()
+              .then((groupDoc) => groupDoc.data()),
+            isGroup: true,
+          }))
+        )
+      );
+    return () => {
+      userUnsubscribe();
+      groupUnsubscribe();
+    };
   }, []);
 
   const NewGroupItem = () => (

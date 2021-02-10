@@ -23,13 +23,19 @@ import firebase from "firebase";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import MessageItem from "./MessageItem";
 
 function ChatWindow() {
   const user = useSelector((state) => state.user.user);
   const navigation = useNavigation();
   const route = useRoute();
+
   const [messages, setMessages] = useState([]);
   const [groupMessages, setGroupMessages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
@@ -91,7 +97,8 @@ function ChatWindow() {
 
   useEffect(() => {
     if (route.params?.isGroup) {
-      db.collection(`groups/${route.params?.groupId}/chats`)
+      const unsubscribe = db
+        .collection(`groups/${route.params?.groupId}/chats`)
         .orderBy("timestamp", "desc")
         .onSnapshot((snapshot) =>
           setGroupMessages(
@@ -107,27 +114,30 @@ function ChatWindow() {
             }))
           )
         );
+      return () => unsubscribe();
     } else {
-      db.collection(`users/${user.uid}/chats/${route.params?.uid}/messages`)
+      const unsubscribe = db
+        .collection(`users/${user.uid}/chats/${route.params?.uid}/messages`)
         .orderBy("timestamp", "desc")
-        .onSnapshot((snapshot) =>
+        .onSnapshot((snapshot) => {
           setMessages(
             snapshot.docs.map((doc) => ({
               id: doc.id,
               data: doc.data(),
               isGroup: false,
             }))
-          )
-        );
-      db.collection(`users/${route.params?.uid}/chats/${user.uid}/messages`)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) =>
-            doc.ref.update({
-              seen: true,
-            })
           );
+          db.collection(`users/${route.params?.uid}/chats/${user.uid}/messages`)
+            .get()
+            .then((snapshot) =>
+              snapshot.forEach((doc) =>
+                doc.ref.update({
+                  seen: true,
+                })
+              )
+            );
         });
+      return () => unsubscribe();
     }
   }, [db]);
 

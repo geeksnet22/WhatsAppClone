@@ -14,6 +14,7 @@ import whatsappLogo from "../images/WhatsApp-Logo.png";
 import { login } from "../redux/user/UserActions";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import firebase from "firebase";
 
 function Login() {
   const dispatch = useDispatch();

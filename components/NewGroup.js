@@ -41,7 +41,7 @@ function NewGroup() {
   }, [navigation, selectedUsers]);
 
   useEffect(() => {
-    db.collection("users").onSnapshot((snapshot) =>
+    const unsubscribe = db.collection("users").onSnapshot((snapshot) =>
       setContacts(
         snapshot.docs
           .filter((doc) => doc.id !== user.uid)
@@ -51,6 +51,7 @@ function NewGroup() {
           }))
       )
     );
+    return () => unsubscribe();
   }, []);
 
   const handleSelectionChange = (uid, isSelected) => {

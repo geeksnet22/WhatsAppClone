@@ -21,7 +21,8 @@ function Chats({ navigation }) {
   );
 
   useEffect(() => {
-    db.collection(`users/${user.uid}/chats`)
+    const userUnsubscribe = db
+      .collection(`users/${user.uid}/chats`)
       .orderBy("timestamp", "desc")
       .onSnapshot((snapshot) =>
         setChats(
@@ -36,24 +37,30 @@ function Chats({ navigation }) {
           }))
         )
       );
-    db.collection(`users/${user.uid}/groups`).onSnapshot((userSnapshot) => {
-      setGroups(
-        userSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-          lastUserDataPromise: db
-            .collection("users")
-            .doc(doc.data().lastUser)
-            .get()
-            .then((userDoc) => userDoc.data()),
-          groupDataPromise: db
-            .collection("groups")
-            .doc(doc.id)
-            .get()
-            .then((groupDoc) => groupDoc.data()),
-        }))
-      );
-    });
+    const groupUnsubscribe = db
+      .collection(`users/${user.uid}/groups`)
+      .onSnapshot((userSnapshot) => {
+        setGroups(
+          userSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+            lastUserDataPromise: db
+              .collection("users")
+              .doc(doc.data().lastUser)
+              .get()
+              .then((userDoc) => userDoc.data()),
+            groupDataPromise: db
+              .collection("groups")
+              .doc(doc.id)
+              .get()
+              .then((groupDoc) => groupDoc.data()),
+          }))
+        );
+      });
+    return () => {
+      userUnsubscribe();
+      groupUnsubscribe();
+    };
   }, []);
 
   const renderItem = ({ item }) => {
