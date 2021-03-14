@@ -196,8 +196,8 @@ function ChatWindow() {
         content: messageInput,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
-      setMessageInput("");
     }
+    setMessageInput("");
   };
 
   const renderItem = ({ item }) => {
