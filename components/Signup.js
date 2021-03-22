@@ -10,9 +10,11 @@ import { auth, db } from "../firebaseConfig";
 import whatsappLogo from "../images/WhatsApp-Logo.png";
 import { login } from "../redux/user/UserActions";
 import firebase from "firebase";
+import { useNavigation } from "@react-navigation/native";
 
 function Signup() {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [fullName, setFullName] = useState("");
   const [photoURL, setPhotoURL] = useState("");
   const [email, setEmail] = useState("");
@@ -26,6 +28,7 @@ function Signup() {
     auth
       .createUserWithEmailAndPassword(email.trim(), password)
       .then((user) => {
+        navigation.navigate("Home");
         dispatch(
           login({
             name: fullName,
